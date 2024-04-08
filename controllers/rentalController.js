@@ -143,16 +143,22 @@ const DeleteImage = async (req,res) => {
             return res.status(404).send("No rental found");
         }  
         else{
-                const imagePath = `public/images/${rental.rentalImage}`
+                const imagePath = `public/images/${rental.rentalImage}`;
+                if (fs.existsSync(imagePath)) {
+                    fs.unlink(imagePath, async (err) => {
+                        if (err) {
+                            console.error("Error deleting image:", err);
+                            return res.status(500).send("Error deleting image");
+                        }
+                        await Rental.findByIdAndDelete(rentalId);
+                       return res.status(200).send("Delete Successful");
+                    })
+                    
+                } else {
+                    res.status(404).send("File not found");
+                }
                 //console.log(imagePath)
-                fs.unlinkSync(imagePath, async (err) => {
-                    if (err) {
-                        console.error("Error deleting image:", err);
-                        return res.status(500).send("Error deleting image");
-                    }
-                    await Rental.findByIdAndDelete(rentalId);
-                   return res.status(200).send("Delete Successful");
-                });
+              
             }
         //        res.send("found") 
         //        await Rental.findByIdAndDelete(rentalId);
