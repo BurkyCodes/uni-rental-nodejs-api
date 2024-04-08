@@ -15,6 +15,6 @@ router.delete('/deleteRental/:id',DeleteImage )
 router.get('/:rentalId',getRental);
 router.get('/search/:searchTerm',searchRental);
 router.get('/type/:type',searchByType)
-router.get('/location/:university',searchByUniversity)
+router.get('/location/:university',searchByUniversity);
 
 module.exports = router;
