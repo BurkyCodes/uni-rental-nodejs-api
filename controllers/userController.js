@@ -89,6 +89,27 @@ const login = async (req,res,next) => {
     }
 
 }
+
+const loginAdmin = async (req,res,next) => {
+    try {
+        const user = await User.findOne({email:req.body.email})
+        if(!user){
+            return next(CreateError(404,"User not found!!"))
+        }
+        const IsPasswordCorrect = await bcrypt.compare(req.body.password,user.password);
+        if(!IsPasswordCorrect){
+            return next(CreateError(400,"Password is incorrect!!"))
+        }
+        const isAdmin = user.isAdmin === true;
+        if(!isAdmin){
+            return next(CreateError(401,"You are not authorized to access this resource!"))
+        }
+        res.send(generateToken(user));
+        
+    } catch (error) {
+        return next(CreateError(500,error))
+    }
+}
 const generateToken = (user) => {
     const token = jwt.sign({
         id:user._id,
@@ -130,4 +151,4 @@ const generateToken = (user) => {
     }
 }
 
-module.exports = {getUsers,register,registerAdmin,deleteUser,login}
+module.exports = {getUsers,register,registerAdmin,deleteUser,login,loginAdmin}
